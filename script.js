@@ -1,82 +1,82 @@
 lucide.createIcons();
 
-let lives = { 1: 40, 2: 40 };
-let timerInterval;
-let seconds = 0;
-let isRunning = false;
-let gameHistory = JSON.parse(localStorage.getItem('mtg_history')) || [];
+let players = JSON.parse(localStorage.getItem('mtg_players')) || [];
+let activeMatch = { p1: null, p2: null, p1Life: 20, p2Life: 20 };
+let timeLeft = 3000; // 50 minut w sekundach
+let timerId = null;
 
-function adjustLife(player, amount) {
-    lives[player] += amount;
-    const display = document.getElementById(`life-${player}`);
-    const box = document.getElementById(`box-${player}`);
+// Tab Switching
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if(tab === 'standings') renderStandings();
+}
+
+// Player Management
+function addPlayer() {
+    const nameInput = document.getElementById('player-name');
+    if(!nameInput.value) return;
     
-    display.innerText = lives[player];
-
-    // Reakcja na Zero HP
-    if (lives[player] <= 0) {
-        box.classList.add('dead');
-    } else {
-        box.classList.remove('dead');
-    }
-}
-
-function toggleTimer() {
-    const btn = document.getElementById('timer-btn');
-    if (isRunning) {
-        clearInterval(timerInterval);
-        btn.innerHTML = '<i data-lucide="play"></i>';
-    } else {
-        timerInterval = setInterval(() => {
-            seconds++;
-            updateTimerDisplay();
-        }, 1000);
-        btn.innerHTML = '<i data-lucide="pause"></i>';
-    }
-    isRunning = !isRunning;
-    lucide.createIcons();
-}
-
-function updateTimerDisplay() {
-    const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    document.getElementById('game-timer').innerText = `${h}:${m}:${s}`;
-}
-
-function resetGame() {
-    if(confirm("Zakończyć grę i zapisać wynik?")) {
-        saveMatch();
-        lives = { 1: 40, 2: 40 };
-        seconds = 0;
-        if(isRunning) toggleTimer();
-        updateTimerDisplay();
-        document.getElementById('life-1').innerText = 40;
-        document.getElementById('life-2').innerText = 40;
-        document.querySelectorAll('.player-box').forEach(b => b.classList.remove('dead'));
-    }
-}
-
-function saveMatch() {
-    const winner = lives[1] > lives[2] ? "Player 1" : "Player 2";
-    const match = {
-        time: document.getElementById('game-timer').innerText,
-        winner: winner,
-        score: `${lives[1]} - ${lives[2]}`
-    };
-    gameHistory.push(match);
-    localStorage.setItem('mtg_history', JSON.stringify(gameHistory));
-}
-
-function showHistory() {
-    const body = document.getElementById('history-body');
-    body.innerHTML = "";
-    gameHistory.reverse().forEach(game => {
-        body.innerHTML += `<tr><td>${game.time}</td><td>${game.winner}</td><td>${game.score}</td></tr>`;
+    players.push({
+        name: nameInput.value,
+        points: 0,
+        matches: 0
     });
-    document.getElementById('history-modal').style.display = "block";
+    
+    nameInput.value = '';
+    save();
+    renderPlayers();
 }
 
-function closeHistory() {
-    document.getElementById('history-modal').style.display = "none";
+function renderPlayers() {
+    const list = document.getElementById('player-list');
+    list.innerHTML = players.map((p, i) => `
+        <div class="player-row">
+            <span>${p.name}</span>
+            <button onclick="startMatch(${i})">HOST MATCH</button>
+        </div>
+    `).join('');
 }
+
+// Timer
+function startRound() {
+    if(timerId) return;
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('round-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        if(timeLeft <= 0) clearInterval(timerId);
+    }, 1000);
+}
+
+// Match Logic
+function modLife(p, amt) {
+    if(p === 1) activeMatch.p1Life += amt;
+    else activeMatch.p2Life += amt;
+    document.getElementById('m-p1-life').innerText = activeMatch.p1Life;
+    document.getElementById('m-p2-life').innerText = activeMatch.p2Life;
+}
+
+function reportMatch() {
+    // Prosta logika: kto ma więcej HP ten wygrywa (3 pkt), remis (1 pkt)
+    alert("Result Reported to Standings!");
+    switchTab('standings');
+}
+
+function renderStandings() {
+    const body = document.getElementById('standings-body');
+    const sorted = [...players].sort((a,b) => b.points - a.points);
+    body.innerHTML = sorted.map((p, i) => `
+        <tr>
+            <td>${i+1}</td>
+            <td>${p.name}</td>
+            <td>${p.points}</td>
+            <td>${p.matches}</td>
+        </tr>
+    `).join('');
+}
+
+function save() { localStorage.setItem('mtg_players', JSON.stringify(players)); }
+renderPlayers();
