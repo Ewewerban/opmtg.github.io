@@ -2,74 +2,88 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MTG Operator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG EVENT HOST - Pro Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-    <nav class="admin-bar">
-        <div class="timer-container">
-            <i data-lucide="timer"></i>
-            <span id="game-timer">00:00:00</span>
-        </div>
-        <div class="admin-actions">
-            <button onclick="toggleTimer()" id="timer-btn" class="btn-icon"><i data-lucide="play"></i></button>
-            <button onclick="resetGame()" class="btn-icon"><i data-lucide="refresh-cw"></i></button>
-            <button onclick="showHistory()" class="btn-icon"><i data-lucide="scroll"></i></button>
-        </div>
-    </nav>
+    <div class="app-grid">
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="swords"></i> <span>EVENT HOST</span>
+            </div>
+            
+            <div class="event-status">
+                <label>ROUND TIMER</label>
+                <div id="round-timer">50:00</div>
+                <div class="timer-controls">
+                    <button onclick="startRound()" id="start-btn"><i data-lucide="play"></i></button>
+                    <button onclick="pauseRound()"><i data-lucide="pause"></i></button>
+                </div>
+            </div>
 
-    <main class="game-area">
-        <section class="player-box p1" id="box-1">
-            <div class="commander-damage-overlay" id="cd-1">CD: 0</div>
-            <div class="player-info">
-                <input type="text" value="PLAYER 1" class="name-input">
-            </div>
-            <div class="life-display">
-                <button class="life-btn" onclick="adjustLife(1, -1)">-</button>
-                <span class="life-total" id="life-1">40</span>
-                <button class="life-btn" onclick="adjustLife(1, 1)">+</button>
-            </div>
-            <div class="quick-adjust">
-                <button onclick="adjustLife(1, -5)">-5</button>
-                <button onclick="adjustLife(1, 5)">+5</button>
-            </div>
-        </section>
+            <nav class="menu">
+                <button onclick="switchTab('players')" class="active"><i data-lucide="users"></i> Players</button>
+                <button onclick="switchTab('match')"><i data-lucide="layout"></i> Active Match</button>
+                <button onclick="switchTab('standings')"><i data-lucide="list-ordered"></i> Standings</button>
+                <button onclick="resetEvent()" class="danger"><i data-lucide="trash-2"></i> Reset Event</button>
+            </nav>
+        </aside>
 
-        <section class="player-box p2" id="box-2">
-            <div class="commander-damage-overlay" id="cd-2">CD: 0</div>
-            <div class="player-info">
-                <input type="text" value="PLAYER 2" class="name-input">
-            </div>
-            <div class="life-display">
-                <button class="life-btn" onclick="adjustLife(2, -1)">-</button>
-                <span class="life-total" id="life-2">40</span>
-                <button class="life-btn" onclick="adjustLife(2, 1)">+</button>
-            </div>
-            <div class="quick-adjust">
-                <button onclick="adjustLife(2, -5)">-5</button>
-                <button onclick="adjustLife(2, 5)">+5</button>
-            </div>
-        </section>
-    </main>
+        <main class="content">
+            <section id="tab-players" class="tab-content active">
+                <header class="section-header">
+                    <h2>Event Registration</h2>
+                    <div class="add-player">
+                        <input type="text" id="player-name" placeholder="Player Name...">
+                        <button onclick="addPlayer()">ADD PLAYER</button>
+                    </div>
+                </header>
+                <ul id="player-list" class="list-view"></ul>
+            </section>
 
-    <div id="history-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeHistory()">&times;</span>
-            <h2>Historia Wyników</h2>
-            <table id="leaderboard">
-                <thead>
-                    <tr>
-                        <th>Czas</th>
-                        <th>Zwycięzca</th>
-                        <th>Wynik</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body"></tbody>
-            </table>
-        </div>
+            <section id="tab-match" class="tab-content">
+                <div class="match-grid">
+                    <div class="player-card p1">
+                        <h1 id="m-p1-name">Player 1</h1>
+                        <div class="life" id="m-p1-life">20</div>
+                        <div class="life-ctrl">
+                            <button onclick="modLife(1, -1)">-1</button>
+                            <button onclick="modLife(1, 1)">+1</button>
+                        </div>
+                    </div>
+                    <div class="match-vs">VS</div>
+                    <div class="player-card p2">
+                        <h1 id="m-p2-name">Player 2</h1>
+                        <div class="life" id="m-p2-life">20</div>
+                        <div class="life-ctrl">
+                            <button onclick="modLife(2, -1)">-1</button>
+                            <button onclick="modLife(2, 1)">+1</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="match-footer">
+                    <button class="submit-result" onclick="reportMatch()">REPORT RESULT</button>
+                </div>
+            </section>
+
+            <section id="tab-standings" class="tab-content">
+                <h2>Leaderboard</h2>
+                <table id="standings-table">
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Player</th>
+                            <th>Points (3/1/0)</th>
+                            <th>Matches</th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body"></tbody>
+                </table>
+            </section>
+        </main>
     </div>
 
     <script src="script.js"></script>
