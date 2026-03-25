@@ -1,0 +1,145 @@
+:root {
+    --dark: #0a0a0a;
+    --gray: #1a1a1a;
+    --red: #c53030;
+    --blue: #2b6cb0;
+    --gold: #ecc94b;
+    --white: #edf2f7;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--dark);
+    color: var(--white);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Admin Bar */
+.admin-bar {
+    background: var(--gray);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #333;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: monospace;
+    font-size: 1.4rem;
+    color: var(--gold);
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    padding: 8px;
+    transition: 0.2s;
+}
+
+.btn-icon:hover { color: var(--gold); }
+
+/* Game Board */
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.player-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.p1 { background: linear-gradient(180deg, #300, #100); }
+.p2 { background: linear-gradient(180deg, #003, #001); }
+
+/* Death Animation */
+.dead {
+    filter: grayscale(1) brightness(0.5);
+    background: #000 !important;
+}
+
+.dead::after {
+    content: "ELIMINATED";
+    position: absolute;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--red);
+    transform: rotate(-15deg);
+    border: 5px solid var(--red);
+    padding: 10px;
+}
+
+.name-input {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.life-total {
+    font-size: 10rem;
+    font-weight: 900;
+    margin: 0 30px;
+    min-width: 200px;
+    text-align: center;
+}
+
+.life-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.quick-adjust button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.5);
+    margin: 10px;
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    background: var(--gray);
+    margin: 10% auto;
+    padding: 20px;
+    width: 80%;
+    border-radius: 10px;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
