@@ -2,209 +2,76 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTG Life Counter & Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MTG Operator</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --bg: #121212;
-            --card-p1: #4a0404;
-            --card-p2: #041e42;
-            --accent: #fbbf24;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* PANEL ADMINA */
-        #admin-panel {
-            background: #1f1f1f;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #333;
-        }
-
-        .timer-display {
-            font-family: monospace;
-            font-size: 1.5rem;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-btns button {
-            background: #333;
-            color: white;
-            border: 1px solid #555;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        .admin-btns button:hover { background: #444; }
-
-        /* PLANSZA GRY */
-        #game-board {
-            flex: 1;
-            display: flex;
-            gap: 5px;
-            padding: 5px;
-        }
-
-        .player-zone {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .p1 { background: var(--card-p1); }
-        .p2 { background: var(--card-p2); }
-
-        .life-value {
-            font-size: clamp(5rem, 20vw, 12rem);
-            font-weight: 800;
-            margin: 10px 0;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        .controls {
-            display: flex;
-            gap: 20px;
-        }
-
-        .btn-life {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
-            color: white;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        .btn-life:active { transform: scale(0.9); background: rgba(255,255,255,0.3); }
-
-        /* TABLICA WYNIKÓW */
-        #history-panel {
-            background: #181818;
-            padding: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 0.9rem;
-            border-top: 1px solid #333;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-around;
-            padding: 5px;
-            border-bottom: 1px solid #222;
-        }
-    </style>
 </head>
 <body>
 
-    <div id="admin-panel">
-        <div class="timer-display">
-            <i data-lucide="clock"></i>
-            <span id="time">00:00</span>
+    <nav class="admin-bar">
+        <div class="timer-container">
+            <i data-lucide="timer"></i>
+            <span id="game-timer">00:00:00</span>
         </div>
-        <div class="admin-btns">
-            <button onclick="startGame()">START</button>
-            <button onclick="resetGame()">RESET</button>
+        <div class="admin-actions">
+            <button onclick="toggleTimer()" id="timer-btn" class="btn-icon"><i data-lucide="play"></i></button>
+            <button onclick="resetGame()" class="btn-icon"><i data-lucide="refresh-cw"></i></button>
+            <button onclick="showHistory()" class="btn-icon"><i data-lucide="scroll"></i></button>
         </div>
-    </div>
+    </nav>
 
-    <div id="game-board">
-        <div class="player-zone p1">
-            <span>PLAYER 1</span>
-            <div class="life-value" id="p1-life">40</div>
-            <div class="controls">
-                <button class="btn-life" onclick="changeLife(1, -1)">-</button>
-                <button class="btn-life" onclick="changeLife(1, 1)">+</button>
+    <main class="game-area">
+        <section class="player-box p1" id="box-1">
+            <div class="commander-damage-overlay" id="cd-1">CD: 0</div>
+            <div class="player-info">
+                <input type="text" value="PLAYER 1" class="name-input">
             </div>
-        </div>
-        <div class="player-zone p2">
-            <span>PLAYER 2</span>
-            <div class="life-value" id="p2-life">40</div>
-            <div class="controls">
-                <button class="btn-life" onclick="changeLife(2, -1)">-</button>
-                <button class="btn-life" onclick="changeLife(2, 1)">+</button>
+            <div class="life-display">
+                <button class="life-btn" onclick="adjustLife(1, -1)">-</button>
+                <span class="life-total" id="life-1">40</span>
+                <button class="life-btn" onclick="adjustLife(1, 1)">+</button>
             </div>
+            <div class="quick-adjust">
+                <button onclick="adjustLife(1, -5)">-5</button>
+                <button onclick="adjustLife(1, 5)">+5</button>
+            </div>
+        </section>
+
+        <section class="player-box p2" id="box-2">
+            <div class="commander-damage-overlay" id="cd-2">CD: 0</div>
+            <div class="player-info">
+                <input type="text" value="PLAYER 2" class="name-input">
+            </div>
+            <div class="life-display">
+                <button class="life-btn" onclick="adjustLife(2, -1)">-</button>
+                <span class="life-total" id="life-2">40</span>
+                <button class="life-btn" onclick="adjustLife(2, 1)">+</button>
+            </div>
+            <div class="quick-adjust">
+                <button onclick="adjustLife(2, -5)">-5</button>
+                <button onclick="adjustLife(2, 5)">+5</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHistory()">&times;</span>
+            <h2>Historia Wyników</h2>
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Czas</th>
+                        <th>Zwycięzca</th>
+                        <th>Wynik</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
         </div>
     </div>
 
-    <div id="history-panel">
-        <div style="text-align:center; color: #777;">Lokalna tablica wyników (historia sesji)</div>
-        <div id="history-list"></div>
-    </div>
-
-    <script>
-        // Inicjalizacja ikon
-        lucide.createIcons();
-
-        let p1Life = 40;
-        let p2Life = 40;
-        let seconds = 0;
-        let timerInterval = null;
-
-        function updateDisplay() {
-            document.getElementById('p1-life').innerText = p1Life;
-            document.getElementById('p2-life').innerText = p2Life;
-        }
-
-        function changeLife(player, amt) {
-            if (player === 1) p1Life += amt;
-            else p2Life += amt;
-            updateDisplay();
-        }
-
-        function startGame() {
-            if (timerInterval) return;
-            timerInterval = setInterval(() => {
-                seconds++;
-                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                const secs = (seconds % 60).toString().padStart(2, '0');
-                document.getElementById('time').innerText = `${mins}:${secs}`;
-            }, 1000);
-        }
-
-        function resetGame() {
-            // Dodaj do historii
-            if (seconds > 0) {
-                const list = document.getElementById('history-list');
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                item.innerHTML = `<span>Mecz: ${document.getElementById('time').innerText}</span> <span>P1: ${p1Life}</span> <span>P2: ${p2Life}</span>`;
-                list.prepend(item);
-            }
-
-            // Reset stanów
-            clearInterval(timerInterval);
-            timerInterval = null;
-            seconds = 0;
-            p1Life = 40;
-            p2Life = 40;
-            document.getElementById('time').innerText = "00:00";
-            updateDisplay();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
