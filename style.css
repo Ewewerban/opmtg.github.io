@@ -1,145 +1,110 @@
 :root {
-    --dark: #0a0a0a;
-    --gray: #1a1a1a;
-    --red: #c53030;
-    --blue: #2b6cb0;
-    --gold: #ecc94b;
-    --white: #edf2f7;
+    --bg-dark: #0f172a;
+    --sidebar: #1e293b;
+    --accent: #38bdf8;
+    --danger: #ef4444;
+    --text: #f8fafc;
 }
 
 body {
     margin: 0;
-    padding: 0;
-    background: var(--dark);
-    color: var(--white);
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
     overflow: hidden;
 }
 
-/* Admin Bar */
-.admin-bar {
-    background: var(--gray);
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #333;
+.app-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: 100vh;
 }
 
-.timer-container {
+/* SIDEBAR */
+.sidebar {
+    background: var(--sidebar);
+    padding: 20px;
+    border-right: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: monospace;
-    font-size: 1.4rem;
-    color: var(--gold);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 40px;
 }
 
-.btn-icon {
-    background: transparent;
-    border: none;
-    color: var(--white);
-    cursor: pointer;
-    padding: 8px;
-    transition: 0.2s;
-}
-
-.btn-icon:hover { color: var(--gold); }
-
-/* Game Board */
-.game-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.player-box {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    transition: all 0.5s ease;
-}
-
-.p1 { background: linear-gradient(180deg, #300, #100); }
-.p2 { background: linear-gradient(180deg, #003, #001); }
-
-/* Death Animation */
-.dead {
-    filter: grayscale(1) brightness(0.5);
-    background: #000 !important;
-}
-
-.dead::after {
-    content: "ELIMINATED";
-    position: absolute;
+#round-timer {
     font-size: 3rem;
     font-weight: 900;
-    color: var(--red);
-    transform: rotate(-15deg);
-    border: 5px solid var(--red);
-    padding: 10px;
+    font-family: monospace;
+    text-align: center;
+    margin: 10px 0;
 }
 
-.name-input {
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.menu { display: flex; flex-direction: column; gap: 10px; }
+.menu button {
     background: transparent;
     border: none;
-    color: rgba(255,255,255,0.6);
-    text-align: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    color: #94a3b8;
+    text-align: left;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
 }
 
-.life-total {
-    font-size: 10rem;
-    font-weight: 900;
-    margin: 0 30px;
-    min-width: 200px;
+.menu button.active { background: #334155; color: white; }
+.menu button.danger { margin-top: auto; color: var(--danger); }
+
+/* MAIN CONTENT */
+.content { padding: 40px; overflow-y: auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* MATCH VIEW */
+.match-grid {
+    display: grid;
+    grid-template-columns: 1fr 100px 1fr;
+    align-items: center;
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 40px;
     text-align: center;
 }
 
-.life-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
+.player-card h1 { font-size: 1.2rem; color: #94a3b8; }
+.life { font-size: 8rem; font-weight: 900; margin: 20px 0; }
+.life-ctrl button {
+    background: #334155;
+    border: none;
     color: white;
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
+    margin: 0 5px;
 }
 
-.quick-adjust button {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.5);
-    margin: 10px;
-    padding: 5px 15px;
-    border-radius: 5px;
-}
+.match-vs { font-size: 2rem; font-weight: 800; color: #475569; }
 
-/* Modals */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-}
-
-.modal-content {
-    background: var(--gray);
-    margin: 10% auto;
-    padding: 20px;
-    width: 80%;
-    border-radius: 10px;
-}
-
+/* TABLE */
 table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+th { text-align: left; padding: 15px; color: #94a3b8; border-bottom: 1px solid #334155; }
+td { padding: 15px; border-bottom: 1px solid #1e293b; }
